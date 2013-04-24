@@ -30,7 +30,12 @@ void setupSoni()
   o.perspective(radians(45), float(width)/float(height), 10, 150000);
 }
 
+void setupMeshCreation()
+{
+  meshCreator = new HEC_ConvexHull();
+  meshRender = new WB_Render(this);
 
+}
 
 
 
