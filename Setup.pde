@@ -30,14 +30,21 @@ void setupSoni()
   o.perspective(radians(45), float(width)/float(height), 10, 150000);
 }
 
-void setupMeshCreation()
+/*void setupMeshCreation()
 {
   meshCreator = new HEC_ConvexHull();
   meshRender = new WB_Render(this);
 
+}*/
+
+void setupControls()
+{
+  cp5 = new ControlP5(this);
+  
+  cp5.addSlider("worldWidth").setPosition(150, 10).setWidth(300).setRange(0, 10000).setValue(1000);
+  cp5.addSlider("worldHeight").setPosition(150, 30).setWidth(300).setRange(0, 10000).setValue(1000);
+  cp5.addSlider("worldDepth").setPosition(150, 50).setWidth(300).setRange(0, 10000).setValue(1000);
 }
-
-
 
 
 

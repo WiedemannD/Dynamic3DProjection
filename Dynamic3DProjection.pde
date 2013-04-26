@@ -4,22 +4,28 @@
 import processing.opengl.*;
 import deadpixel.keystone.*;
 import SimpleOpenNI.*;
-import wblut.math.*;
+/*import wblut.math.*;
 import wblut.processing.*;
 import wblut.core.*;
 import wblut.hemesh.*;
-import wblut.geom.*;
+import wblut.geom.*;*/
+import controlP5.*;
 
 // general variables
 Config config;
 int vWidth = 1280;//1024;
 int vHeight = 1024;//768;
 int mainFps = 300;
+int worldWidth = 1000;
+int worldHeight = worldWidth;
+int worldDepth = worldWidth;
+
 
 PFont font = createFont("monaspace", 20);
 
 // flags
 Boolean drawStats = true;
+Boolean drawControls = true;
 
 // keystone vars
 Keystone ks;
@@ -34,38 +40,47 @@ float rotY = radians(0);
 float[][] soniPoints;
 
 // mesh creation vars
-HEC_ConvexHull meshCreator;
+/*HEC_ConvexHull meshCreator;
 HE_Mesh mesh;
-WB_Render meshRender;
+WB_Render meshRender;*/
+
+// controlP5 vars
+ControlP5 cp5;
 
 void setup() {
   size(vWidth, vHeight, OPENGL);
   frameRate(mainFps);
    
   setupKeystone();
-  setupMeshCreation();
+  //setupMeshCreation();
   
   config = new Config(this);
-  
   setupSoni();
+  setupControls();
 }
 
 void draw() {
   PVector surfaceMouse = surface.getTransformedMouse();
   
-  //o.beginDraw();
-  //o.background(0);
+  o.beginDraw();
+  o.background(0);
   
+  updateDrawWorld(true);
   updateSoni();
-  updateDrawMeshes();
+  //updateDrawMeshes();
   
-  //o.endDraw();
-  //background(0);
-  //surface.render(o);
+  o.endDraw();
+  background(0);
+  surface.render(o);
   
   if(config.debug && drawStats)
   {
     drawStats();
+  }
+  
+  if(config.debug && drawControls)
+  {
+    drawControls();
   }
   
 }
