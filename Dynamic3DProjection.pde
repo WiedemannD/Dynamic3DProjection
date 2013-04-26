@@ -14,12 +14,13 @@ import controlP5.*;
 
 // general variables
 Config config;
-int vWidth = 1280;//1024;
-int vHeight = 1024;//768;
+int vWidth = 1024;
+int vHeight = 768;
 int mainFps = 300;
 int worldWidth = 1000;
 int worldHeight = worldWidth;
 int worldDepth = worldWidth;
+
 
 
 PFont font = createFont("monaspace", 20);
