@@ -67,7 +67,7 @@ void draw() {
   o.beginDraw();
   o.background(0);
   
-  updateDrawWorld(true);
+  updateDrawWorld(false);
   updateSoni();
   //updateDrawMeshes();
   
