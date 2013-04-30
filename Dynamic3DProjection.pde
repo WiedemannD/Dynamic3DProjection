@@ -21,6 +21,7 @@ int worldWidth = 1000;
 int worldHeight = worldWidth;
 int worldDepth = worldWidth;
 
+int threshold = 10; // needs testing
 
 
 PFont font = createFont("monaspace", 20);

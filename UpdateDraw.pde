@@ -86,26 +86,28 @@ void updateSoni()
   int     indexBottom;
   PVector realWorldPoint;
   PVector realWorldPointLeft;
-  PVector realWorldPointRight;
-  PVector realWorldPointTop;
-  PVector realWorldPointBottom;
+  PVector realWorldPointTop; 
+  float leftDistance;
+  float topDistance;
   
-  ArrayList firstObject; 
+ 
+  ArrayList objects;
+  ArrayList object;
   
-  boolean noAddLeft = false;
-  boolean noAddRight = false;
-  boolean noAddTop = false;
-  boolean noAddBottom = false;
+  boolean partOfObject = false;
     
-  float threshold = 20; // needs testing
+  
  
   o.stroke(255);
   
-  firstObject = new ArrayList(); 
+  objects = new ArrayList(); 
+  object = new ArrayList();
+  
   
   //soniPoints = new float[307200][3]; // HUGE HIT ON PERFORMANCE, THINK OF SOMETHING ELSE!!!!!!!!!!!
   int count = 0;
   
+ 
   PVector[] realWorldMap = soni.depthMapRealWorld(); 
   for(int y=0;y < soni.depthHeight();y+=steps)
   {
@@ -114,128 +116,123 @@ void updateSoni()
       index = x + y * soni.depthWidth();
       if(depthMap[index] > 0)
       { 
-        //if(realWorldPoint.x < worldWidth)
-        //{
+         //if(realWorldPoint.x < worldWidth)
+         //{
          // draw the projected point
          // realWorldPoint = context.depthMapRealWorld()[index];
          realWorldPoint = realWorldMap[index];
          
-         // find neighbours
-         indexLeft = (x - steps) + y * soni.depthWidth();
-         indexRight = (x + steps) + y * soni.depthWidth();
-         indexTop = x + (y - steps) * soni.depthWidth();
-         indexBottom = x + (y + steps) * soni.depthWidth();
+         // check for boundaries and calculate distances between the point and neighbours
+         // add to the object arrayList all the neighbours that are not already part of it
          
-         // FIX FOR OUT OF BOUNDARIES!!
-         
-          realWorldPointLeft = realWorldMap[indexLeft];
-          realWorldPointRight = realWorldMap[indexRight];
-          realWorldPointTop = realWorldMap[indexTop];
-          realWorldPointBottom = realWorldMap[indexBottom];
-          
-          // calculating distances between point and neighbours
-          float leftDistance = PVector.dist(realWorldPointLeft, realWorldPoint);
-          float rightDistance = PVector.dist(realWorldPointRight, realWorldPoint);
-          float topDistance = PVector.dist(realWorldPointTop, realWorldPoint);
-          float bottomDistance = PVector.dist(realWorldPointBottom, realWorldPoint);
-          
-          if (leftDistance < threshold)
-          {
-            noAddLeft = false;
-            
-            for (int i = firstObject.size()-1; i >= 0; i++)
-            {
-              PVector elementToTest = (PVector) firstObject.get(i);
-              if (elementToTest == realWorldPointLeft) 
-              {
-                noAddLeft = true;
-              }
-            }
-          }
-          
-          if (rightDistance < threshold)
-          {
-            noAddRight = false;
-            
-            for (int i = firstObject.size()-1; i >= 0; i++)
-            {
-              PVector elementToTest = (PVector) firstObject.get(i);
-              if (elementToTest == realWorldPointRight) 
-              {
-                noAddRight = true;
-              }
-            }
-          }
-          
-          if (topDistance < threshold)
-          {
-            noAddTop = false;
-            
-            for (int i = firstObject.size()-1; i >= 0; i++)
-            {
-              PVector elementToTest = (PVector) firstObject.get(i);
-              if (elementToTest == realWorldPointTop) 
-              {
-                noAddTop = true;
-              }
-            }
-          }
-          
-          if (bottomDistance < threshold)
-          {
-            noAddBottom = false;
-            
-            for (int i = firstObject.size()-1; i >= 0; i++)
-            {
-              PVector elementToTest = (PVector) firstObject.get(i);
-              if (elementToTest == realWorldPointBottom) 
-              {
-                noAddBottom = true;
-              }
-            }
-          }
-          
-          if (noAddLeft == false) 
-          {
-            firstObject.add(realWorldPointLeft);
-          } 
-
-          if (noAddRight == false) 
-          {
-            firstObject.add(realWorldPointRight);
-          } 
-
-          if (noAddTop == false) 
-          {
-            firstObject.add(realWorldPointTop);
-          } 
-
-          if (noAddBottom == false) 
-          {
-            firstObject.add(realWorldPointBottom);
-          } 
-
-          
-          //o.point(realWorldPoint.x, realWorldPoint.y, realWorldPoint.z);  // make realworld z negative, in the 3d drawing coordsystem +z points in the direction of the eye
-         
-          //println("xyz "+realWorldPoint.x+" "+ realWorldPoint.y+" "+ realWorldPoint.z);
-         
-          o.pushMatrix(); 
+         partOfObject = false; 
+               
+         if (x != 0) 
+         {
+           indexLeft = (x - steps) + y * soni.depthWidth();
            
-            o.translate(0, 0, realWorldPoint.z);
-            o.ellipse(realWorldPoint.x, realWorldPoint.y, 10, 10);
+           realWorldPointLeft = realWorldMap[indexLeft];
            
-            /*soniPoints[count][0] = realWorldPoint.x;
-            soniPoints[count][1] = realWorldPoint.y;
-            soniPoints[count][2] = realWorldPoint.z;
+           //leftDistance = PVector.dist(realWorldPointLeft, realWorldPoint);
+           leftDistance = realWorldPoint.z - realWorldPointLeft.z;
            
-            count++;
-            */
-          o.popMatrix(); 
-        //} 
-      }
+           
+          if (leftDistance <= threshold)
+          {
+            partOfObject = true;
+          }
+          else
+          {
+            if (y != 0)
+            {
+              indexTop = x + (y - steps) * soni.depthWidth();
+             
+              realWorldPointTop = realWorldMap[indexTop];
+             
+              //topDistance = PVector.dist(realWorldPointTop, realWorldPoint);
+              topDistance = realWorldPoint.z - realWorldPointTop.z;
+             
+             if (topDistance <= threshold)
+             {
+               partOfObject = true;
+             }
+           }
+         }
+         }
+         
+         if (partOfObject || (x == 0 && y == 0 && realWorldPoint.z != 0))
+         {
+           object.add(realWorldPoint);
+         }
+         else
+         {
+           objects.add(object);
+           object = new ArrayList();
+         }
+
+      //o.point(realWorldPoint.x, realWorldPoint.y, realWorldPoint.z);  // make realworld z negative, in the 3d drawing coordsystem +z points in the direction of the eye
+          
+     /*
+     o.pushMatrix(); 
+     o.pushStyle();
+     
+     o.translate(0, 0, realWorldPoint.z);
+     o.fill (255); 
+     o.ellipse(realWorldPoint.x, realWorldPoint.y, 30, 30);
+     
+     o.popStyle();
+     o.popMatrix(); 
+     */
+       
+     /*
+     soniPoints[count][0] = realWorldPoint.x;
+     soniPoints[count][1] = realWorldPoint.y;
+     soniPoints[count][2] = realWorldPoint.z;
+     
+     count++;
+     */ 
     }
+   }
   } 
+  
+  //println("xyz "+realWorldPoint.x+" "+ realWorldPoint.y+" "+ realWorldPoint.z); 
+       
+       
+         
+       // place an ellipse for every point inside the object
+       for (int i = 0; i < objects.size(); i++)
+       {
+         ArrayList objectToDraw = (ArrayList) objects.get(i);
+         
+         for (int j = 0; j < objectToDraw.size(); j++)
+         {
+          PVector elementToDraw = (PVector) objectToDraw.get(j);
+          
+          o.pushMatrix(); 
+          o.pushStyle();
+          
+            o.translate(0, 0, elementToDraw.z);
+            o.noStroke();
+            //o.colorMode(HSB, 255);
+            //o.fill (i * (255/objects.size()), 255, 255);
+           
+             if(i % 2 > 0)
+             {
+               o.fill (255, 100, 100); 
+             }
+             else
+             {
+               o.fill (100, 255, 100);
+             }
+            
+            o.ellipse(elementToDraw.x, elementToDraw.y, 10, 10);
+          
+          o.popStyle();
+          o.popMatrix();  
+         }
+       }
+
+  println (objects.size());
 
   // draw the kinect cam
   //soni.drawCamFrustum();
