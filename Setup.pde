@@ -44,6 +44,7 @@ void setupControls()
   cp5.addSlider("worldWidth").setPosition(150, 10).setWidth(300).setRange(0, 10000).setValue(1000);
   cp5.addSlider("worldHeight").setPosition(150, 30).setWidth(300).setRange(0, 10000).setValue(1000);
   cp5.addSlider("worldDepth").setPosition(150, 50).setWidth(300).setRange(0, 10000).setValue(1000);
+  cp5.addSlider("trackerPointToPointMaxDistance").setPosition(150, 70).setWidth(300).setRange(0, 300).setValue(50);
 }
 
 

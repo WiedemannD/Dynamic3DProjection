@@ -8,6 +8,8 @@ void updateDrawWorld(Boolean drawWorldBounds)
   o.scale(zoomF);
   o.translate(0,0,-1000);  // set the rotation center of the scene 1000 infront of the camera
   
+  o.noStroke();
+  
   if(drawWorldBounds)
   {
     int worldBoundsTransparecy = 70; 
@@ -77,7 +79,7 @@ void updateSoni()
   soni.update();
 
 
-  int[]   depthMap = soni.depthMap();
+  /*int[]   depthMap = soni.depthMap();
   int     steps   = 10;  // to speed up the drawing, draw every third point
   int     index;
   PVector realWorldPoint;
@@ -95,11 +97,15 @@ void updateSoni()
       index = x + y * soni.depthWidth();
       if(depthMap[index] > 0)
       { 
+        
+        realWorldPoint = realWorldMap[index];
+        
         //if(realWorldPoint.x < worldWidth)
         //{
           // draw the projected point
           //        realWorldPoint = context.depthMapRealWorld()[index];
-          realWorldPoint = realWorldMap[index];
+          
+          
           //o.point(realWorldPoint.x, realWorldPoint.y, realWorldPoint.z);  // make realworld z negative, in the 3d drawing coordsystem +z points in the direction of the eye
          
           //println("xyz "+realWorldPoint.x+" "+ realWorldPoint.y+" "+ realWorldPoint.z);
@@ -107,22 +113,21 @@ void updateSoni()
           o.pushMatrix(); 
          
             o.translate(0, 0, realWorldPoint.z);
-            o.ellipse(realWorldPoint.x, realWorldPoint.y, 50, 50);
+            o.ellipse(realWorldPoint.x, realWorldPoint.y, 30, 30);
            
-            /*soniPoints[count][0] = realWorldPoint.x;
-            soniPoints[count][1] = realWorldPoint.y;
-            soniPoints[count][2] = realWorldPoint.z;
-           
-            count++;
-            */
           o.popMatrix(); 
         //} 
       }
     }
-  } 
+  } */
 
   // draw the kinect cam
   //soni.drawCamFrustum();
+}
+
+void updateTracker()
+{
+  PointCloudTracker tracker = new PointCloudTracker(soni.depthMap(), soni.depthMapRealWorld(), soni.depthWidth(), soni.depthHeight(), trackerPointToPointMaxDistance);
 }
 
 /*void updateDrawMeshes()

@@ -20,7 +20,7 @@ int mainFps = 300;
 int worldWidth = 1000;
 int worldHeight = worldWidth;
 int worldDepth = worldWidth;
-
+int trackerPointToPointMaxDistance = 50;
 
 
 PFont font = createFont("monaspace", 20);
@@ -28,6 +28,7 @@ PFont font = createFont("monaspace", 20);
 // flags
 Boolean drawStats = true;
 Boolean drawControls = true;
+Boolean drawPointClouds = true;
 
 // keystone vars
 Keystone ks;
@@ -67,8 +68,10 @@ void draw() {
   o.beginDraw();
   o.background(0);
   
-  updateDrawWorld(true);
+  updateDrawWorld(false);
   updateSoni();
+  updateTracker();
+  
   //updateDrawMeshes();
   
   o.endDraw();
