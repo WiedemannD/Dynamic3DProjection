@@ -1,34 +1,44 @@
 class PointCloudTracker
 {
   int mapSteps = 10; 
-  int maxPointClouds = 500; // might be good to keep low for performance
-  
   
   int[] depthMap;
   PVector[] realWorldMap;
-  int mapWidth, mapHeight, pointToPointMaxDistance;
+  int mapWidth, mapHeight, pointToPointMaxDistance, cloudSizeThreshold, cloudPositionThreshold;
   int pointCloudCount = 0;
+  int trackCount = 0;
   
   PointCloudPoint[] pointCloudPoints;
-  ArrayList[] pointClouds;
+  PointCloud[] pointClouds;
+  ArrayList trackedPointClouds = new ArrayList();
   //float[][][] pointCloudsFloatArray;
   
-  PointCloudTracker(int[] map, PVector[] realWorld, int mapW, int mapH, int maxDistance)
+  PointCloudTracker(int mapW, int mapH)
   {
-    depthMap = map;
-    realWorldMap = realWorld;
     mapWidth = mapW;
     mapHeight = mapH;
-    pointCloudPoints = new PointCloudPoint[realWorldMap.length];
+  }
+  
+  void update(int[] map, PVector[] realWorld, int maxDistance, int sizeThreshold, int positionThreshold)
+  {
+    pointCloudCount = 0;
+    depthMap = map;
+    realWorldMap = realWorld;
     pointToPointMaxDistance = maxDistance;
+    cloudSizeThreshold = sizeThreshold;
+    cloudPositionThreshold = positionThreshold; 
+    
+    pointCloudPoints = new PointCloudPoint[realWorldMap.length];
     
     separatePointClouds();
+    trackPointClouds();
     
     // debug draw
     if(drawPointClouds)
     {
       //drawPointCloudPoints();
-      drawPointClouds();
+      //drawPointClouds();
+      drawTrackedPointClouds();
     }
   }
   
@@ -55,7 +65,7 @@ class PointCloudTracker
   
   void sortPointClouds()
   {
-    pointClouds = new ArrayList[pointCloudCount];
+    pointClouds = new PointCloud[pointCloudCount];
     //pointCloudsFloatArray = Array[pointCloudCount][][3];
     
     for(int i = 0; i < pointCloudPoints.length; i++)
@@ -66,28 +76,198 @@ class PointCloudTracker
       {
         if(pointClouds[pcp.pointCloudId] == null)
         {
-          pointClouds[pcp.pointCloudId] = new ArrayList();
+          pointClouds[pcp.pointCloudId] = new PointCloud();
           //println("added pointcloud");
         }
         
-        ArrayList pointCloud = pointClouds[pcp.pointCloudId];
+        PointCloud pointCloud = pointClouds[pcp.pointCloudId];
         pointCloud.add(pcp);
         //println("--added point");
       }
     }
   }
   
+  void checkForNeighbors(int x, int y)
+  {
+    int currentIndex = x + y * soni.depthWidth();
+    int neighborIndexTop = x + (y - mapSteps) * soni.depthWidth();
+    int neighborIndexRight = (x + mapSteps) + y * soni.depthWidth();
+    int neighborIndexBottom = x + (y + mapSteps) * soni.depthWidth();
+    int neighborIndexLeft = (x - mapSteps) + y * soni.depthWidth();
+
+    PVector neighborRealWorldPointTop, neighborRealWorldPointRight, neighborRealWorldPointBottom, neighborRealWorldPointLeft;
+    PVector currentRealWorldPoint = realWorldMap[currentIndex];
+    
+    Boolean hasTopNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexTop, x, (y - mapSteps));
+    Boolean hasRightNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexRight, (x + mapSteps), y);
+    Boolean hasBottomNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexBottom, x, (y + mapSteps));
+    Boolean hasLeftNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexLeft, (x - mapSteps), y);
+    
+    if((hasTopNeighbor || hasRightNeighbor || hasBottomNeighbor || hasLeftNeighbor) && pointCloudPoints[currentIndex] == null)
+    {
+      pointCloudPoints[currentIndex] = new PointCloudPoint(currentRealWorldPoint, pointCloudCount);
+    }
+  }
+  
+  Boolean checkForNeighbor(PVector currentRealWorldPoint, int currentIndex, int neighborIndex, int neighborX, int neighborY)
+  {
+    PVector neighborRealWorldPoint;
+    Boolean hasNeighbor = false;
+    
+    if(neighborIndex > 0 && neighborIndex < pointCloudPoints.length && pointCloudPoints[neighborIndex] == null)
+    {
+      neighborRealWorldPoint = realWorldMap[neighborIndex];
+      
+      if(currentRealWorldPoint.dist(neighborRealWorldPoint) <= pointToPointMaxDistance)
+      {
+        pointCloudPoints[neighborIndex] = new PointCloudPoint(neighborRealWorldPoint, pointCloudCount);
+        hasNeighbor = true;
+        
+        checkForNeighbors(neighborX, neighborY);
+      }
+    }
+    
+    return hasNeighbor;
+  }
+  
+  void trackPointClouds()
+  {
+    if(trackedPointClouds.size() != 0)
+    {
+      for(int i = 0; i < pointClouds.length; i++)
+      {
+        PointCloud pointCloud = pointClouds[i];
+        Boolean pointCloudIsNew = true;
+        
+        for(int j = 0; j < trackedPointClouds.size(); j++)
+        {
+          PointCloud trackedPointCloud = (PointCloud) trackedPointClouds.get(j);
+          
+          if(pointCloud != null && isInThreshold(pointCloud.x, trackedPointCloud.x, cloudPositionThreshold) && isInThreshold(pointCloud.y, trackedPointCloud.y, cloudPositionThreshold) && isInThreshold(pointCloud.z, trackedPointCloud.z, cloudPositionThreshold) && isInThreshold(pointCloud.w, trackedPointCloud.w, cloudSizeThreshold) && isInThreshold(pointCloud.h, trackedPointCloud.h, cloudSizeThreshold) && isInThreshold(pointCloud.d, trackedPointCloud.d, cloudSizeThreshold))
+          {
+            pointCloud.trackCount = trackCount;
+            pointCloud.id = trackedPointCloud.id;
+            trackedPointClouds.set(j, pointCloud);
+            pointCloudIsNew = false;
+            
+            break;
+          }
+        }
+        
+        if(pointCloud != null && pointCloudIsNew)
+        {
+          pointCloud.trackCount = trackCount;
+          PointCloud lastPointCloud = (PointCloud) trackedPointClouds.get(trackedPointClouds.size() - 1);
+          pointCloud.id = lastPointCloud.id + 1;
+          trackedPointClouds.add(pointCloud);
+          
+          println("pointCloud.id "+pointCloud.id);
+        }
+      }
+    }
+    else
+    {
+      for(int k = 0; k < pointClouds.length; k++)
+      {
+        PointCloud pointCloud = pointClouds[k];
+        
+        if(pointCloud != null)
+        {
+          pointCloud.id = k;
+          pointCloud.trackCount = trackCount;
+          
+          trackedPointClouds.add(pointCloud);
+        }
+      }
+    }
+    
+    removeUntrackedPointClouds();
+    
+    trackCount++;
+  }
+  
+  Boolean isInThreshold(float value, float trackedValue, int threshold)
+  {
+    if(value >= trackedValue - threshold && value <= trackedValue + threshold)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  
+  void removeUntrackedPointClouds()
+  {
+    for(int i = 0; i < trackedPointClouds.size(); i++)
+    {
+      PointCloud trackedPointCloud = (PointCloud) trackedPointClouds.get(i);
+      
+      if(trackedPointCloud.trackCount != trackCount)
+      {
+        trackedPointClouds.remove(trackedPointCloud);
+        i--;
+      }
+    }
+  }
+  
+  void drawTrackedPointClouds()
+  {
+    for(int i = 0; i < trackedPointClouds.size(); i++)
+    {
+      PointCloud pointCloud = (PointCloud) trackedPointClouds.get(i);
+      
+      if(pointCloud != null)
+      {
+        o.pushStyle();
+          if(pointCloud.id % 2 > 0)
+          {
+            o.fill(255, 0, 0);  
+          }
+          else
+          {
+            o.fill(0, 255, 0);
+          }
+        
+        for(int j = 0; j < pointCloud.size(); j++)
+        {
+          PointCloudPoint pcp = (PointCloudPoint) pointCloud.get(j);
+          
+          if(pcp != null)
+          {
+            o.pushMatrix();
+              o.translate(0, 0, pcp.z);
+              o.ellipse(pcp.x, pcp.y, 30, 30);
+            o.popMatrix();
+          }
+        }
+        
+        o.pushMatrix();
+          o.fill(255);
+          o.translate(pointCloud.x, pointCloud.y, pointCloud.z);
+          o.rotateX(radians(180));
+          o.textSize(100);
+          o.text("id: " + pointCloud.id, 0, 0);
+        o.popMatrix();
+        
+        o.popStyle();
+      }
+    }
+    
+    println("pointclouds (drawTrackedPointClouds): "+trackedPointClouds.size());
+  }
+  
   void drawPointClouds()
   {
     for(int i = 0; i < pointClouds.length; i++)
     {
-      ArrayList pointCloud = pointClouds[i];
-      
-      //println("length "+ pointClouds.length);
-      //println("size "+i+"  "+pointCloud.size());
+      PointCloud pointCloud = pointClouds[i];
       
       if(pointCloud != null)
       {
+        //println("pc: x"+pointCloud.x+" y"+pointCloud.y+" w"+pointCloud.w+" h"+pointCloud.h);
+        
         for(int j = 0; j < pointCloud.size(); j++)
         {
           PointCloudPoint pcp = (PointCloudPoint) pointCloud.get(j);
@@ -146,79 +326,4 @@ class PointCloudTracker
     
     println("pointclouds (drawPointCloudPoints): "+pointCloudCount);
   }
-  
-  void checkForNeighbors(int x, int y)
-  {
-    int currentIndex = x + y * soni.depthWidth();
-    int neighborIndexTop = x + (y - mapSteps) * soni.depthWidth();
-    int neighborIndexRight = (x + mapSteps) + y * soni.depthWidth();
-    int neighborIndexBottom = x + (y + mapSteps) * soni.depthWidth();
-    int neighborIndexLeft = (x - mapSteps) + y * soni.depthWidth();
-
-    PVector neighborRealWorldPointTop, neighborRealWorldPointRight, neighborRealWorldPointBottom, neighborRealWorldPointLeft;
-    PVector currentRealWorldPoint = realWorldMap[currentIndex];
-    
-    Boolean hasTopNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexTop, x, (y - mapSteps));
-    Boolean hasRightNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexRight, (x + mapSteps), y);
-    Boolean hasBottomNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexBottom, x, (y + mapSteps));
-    Boolean hasLeftNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexLeft, (x - mapSteps), y);
-    
-    if((hasTopNeighbor || hasRightNeighbor || hasBottomNeighbor || hasLeftNeighbor) && pointCloudPoints[currentIndex] == null)
-    {
-      pointCloudPoints[currentIndex] = new PointCloudPoint(currentRealWorldPoint, pointCloudCount);
-    }
-    
-        /*
-    // top
-    if(neighborIndexTop > 0 && pointCloudPoints[neighborIndexTop] == null)
-    {
-      neighborRealWorldPointTop = realWorldMap[neighborIndexTop];
-      
-      if(currentRealWorldPoint.dist(neighborRealWorldPointTop) <= pointToPointMaxDistance)
-      {
-        pointCloudPoints[neighborIndexTop] = new PointCloudPoint(neighborRealWorldPointTop, pointCloudCount);
-        hasTopNeighbor = true;
-        
-        checkForNeighbors(neighborRealWorldPointTop.x, neighborRealWorldPointTop.y);
-      }
-    }
-    
-    // right
-    if(neighborIndexRight < pointCloudPoints.length && pointCloudPoints[neighborIndexRight] == null)
-    {
-      neighborRealWorldPointRight = realWorldMap[neighborIndexRight];
-      
-      if(currentRealWorldPoint.dist(neighborRealWorldPointRight) <= pointToPointMaxDistance)
-      {
-        pointCloudPoints[neighborIndexRight] = new PointCloudPoint(neighborRealWorldPointRight, pointCloudCount);
-        hasRightNeighbor = true;
-        
-        checkForNeighbors(neighborRealWorldPointRight.x, neighborRealWorldPointRight.y);
-      }
-    }*/
-
-  }
-  
-  Boolean checkForNeighbor(PVector currentRealWorldPoint, int currentIndex, int neighborIndex, int neighborX, int neighborY)
-  {
-    PVector neighborRealWorldPoint;
-    Boolean hasNeighbor = false;
-    
-    if(neighborIndex > 0 && neighborIndex < pointCloudPoints.length && pointCloudPoints[neighborIndex] == null)
-    {
-      neighborRealWorldPoint = realWorldMap[neighborIndex];
-      
-      if(currentRealWorldPoint.dist(neighborRealWorldPoint) <= pointToPointMaxDistance)
-      {
-        pointCloudPoints[neighborIndex] = new PointCloudPoint(neighborRealWorldPoint, pointCloudCount);
-        hasNeighbor = true;
-        
-        checkForNeighbors(neighborX, neighborY);
-      }
-    }
-    
-    return hasNeighbor;
-  }
-  
-  
 }

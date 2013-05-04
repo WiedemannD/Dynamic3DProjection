@@ -127,7 +127,7 @@ void updateSoni()
 
 void updateTracker()
 {
-  PointCloudTracker tracker = new PointCloudTracker(soni.depthMap(), soni.depthMapRealWorld(), soni.depthWidth(), soni.depthHeight(), trackerPointToPointMaxDistance);
+  tracker.update(soni.depthMap(), soni.depthMapRealWorld(), trackerPointToPointMaxDistance, trackerCloudSizeThreshold, trackerCloudPositionThreshold);
 }
 
 /*void updateDrawMeshes()

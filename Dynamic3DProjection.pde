@@ -20,7 +20,7 @@ int mainFps = 300;
 int worldWidth = 1000;
 int worldHeight = worldWidth;
 int worldDepth = worldWidth;
-int trackerPointToPointMaxDistance = 50;
+
 
 
 PFont font = createFont("monaspace", 20);
@@ -42,6 +42,13 @@ float rotX = radians(180);  // by default rotate the hole scene 180deg around th
 float rotY = radians(0);
 float[][] soniPoints;
 
+// tracking vars
+PointCloudTracker tracker;
+int trackerPointToPointMaxDistance = 150;
+int trackerCloudSizeThreshold = 50;
+int trackerCloudPositionThreshold = 50;
+
+
 // mesh creation vars
 /*HEC_ConvexHull meshCreator;
 HE_Mesh mesh;
@@ -59,6 +66,7 @@ void setup() {
   
   config = new Config(this);
   setupSoni();
+  setupTracker();
   setupControls();
 }
 

@@ -30,6 +30,11 @@ void setupSoni()
   o.perspective(radians(45), float(width)/float(height), 10, 150000);
 }
 
+void setupTracker()
+{
+  tracker = new PointCloudTracker(soni.depthWidth(), soni.depthHeight());
+}
+
 /*void setupMeshCreation()
 {
   meshCreator = new HEC_ConvexHull();
@@ -44,7 +49,9 @@ void setupControls()
   cp5.addSlider("worldWidth").setPosition(150, 10).setWidth(300).setRange(0, 10000).setValue(1000);
   cp5.addSlider("worldHeight").setPosition(150, 30).setWidth(300).setRange(0, 10000).setValue(1000);
   cp5.addSlider("worldDepth").setPosition(150, 50).setWidth(300).setRange(0, 10000).setValue(1000);
-  cp5.addSlider("trackerPointToPointMaxDistance").setPosition(150, 70).setWidth(300).setRange(0, 300).setValue(50);
+  cp5.addSlider("trackerPointToPointMaxDistance").setPosition(150, 70).setWidth(300).setRange(0, 300).setValue(150);
+  cp5.addSlider("trackerCloudSizeThreshold").setPosition(150, 90).setWidth(300).setRange(0, 1000).setValue(200);
+  cp5.addSlider("trackerCloudPositionThreshold").setPosition(150, 110).setWidth(300).setRange(0, 1000).setValue(200);
 }
 
 
