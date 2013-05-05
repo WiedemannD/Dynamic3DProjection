@@ -7,15 +7,27 @@ class VisualizerTron extends Visualizer
   
   void draw()
   {
-    //ArrayList lines = pointCloud.separateLines(true);
-    
     PointCloud outline = pointCloud.separateOutline(false);
     
     o.pushStyle();
-      //o.fill(0, 255, 0);
       o.noFill();
       o.stroke(0, 255, 0);
       o.strokeWeight(8);
+    
+      color colHigh = color(7, 232, 200);
+      color colLow = color(15, 62, 55);
+      color col1, col2;
+      
+      if(frameCount % 20 > 10)
+      {
+        col1 = colHigh;
+        col2 = colLow;
+      }
+      else
+      {
+        col1 = colLow;
+        col2 = colHigh;
+      }
       
       o.beginShape();
     
@@ -23,25 +35,22 @@ class VisualizerTron extends Visualizer
       {
         PointCloudPoint currentPcp = outline.get(i);
         
+        if(i % 8 > 4)
+        {
+          o.stroke(col1);
+        }
+        else
+        {
+          o.stroke(col2);
+        }
         
         o.vertex(currentPcp.x, currentPcp.y, currentPcp.z);
-        
-          
-          
-          //o.line(currentPcp.x, currentPcp.y, currentPcp.z, nextPcp.x, nextPcp.y, nextPcp.z);
-        /* 
-        o.pushMatrix();
-          o.translate(0, 0, pcp.z);
-          o.ellipse(pcp.x, pcp.y, 30, 30);
-        o.popMatrix();
-        */
-       
-        
       }
       
       PointCloudPoint firstPcp = outline.get(0);
       o.vertex(firstPcp.x, firstPcp.y, firstPcp.z);
       o.endShape();
+    
     o.popStyle();
   }
 }
