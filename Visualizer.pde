@@ -38,13 +38,10 @@ class Visualizer
     {
       PointCloudPoint pcp = (PointCloudPoint) pointCloud.get(j);
       
-      if(pcp != null)
-      {
-        o.pushMatrix();
-          o.translate(0, 0, pcp.z);
-          o.ellipse(pcp.x, pcp.y, 30, 30);
-        o.popMatrix();
-      }
+      o.pushMatrix();
+        o.translate(0, 0, pcp.z);
+        o.ellipse(pcp.x, pcp.y, 30, 30);
+      o.popMatrix();
     }
     
     // draw id

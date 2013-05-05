@@ -1,6 +1,6 @@
 class VisualizerCentral
 {
-  int visualizerType = 0;
+  int visualizerType = 1;
   ArrayList pointClouds;
   ArrayList visualizers;
   int updateVisualizerCount = 0;
@@ -50,6 +50,11 @@ class VisualizerCentral
             case 0:
               //just default visualizers
               visualizers.add(new Visualizer(pointCloud, updateVisualizerCount));
+              break;
+              
+            case 1:
+              //outline drawing visualizer
+              visualizers.add(new VisualizerTron(pointCloud, updateVisualizerCount));
               break;
               
             default:

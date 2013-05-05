@@ -105,7 +105,7 @@ class PointCloudTracker
     
     if((hasTopNeighbor || hasRightNeighbor || hasBottomNeighbor || hasLeftNeighbor) && pointCloudPoints[currentIndex] == null)
     {
-      pointCloudPoints[currentIndex] = new PointCloudPoint(currentRealWorldPoint, pointCloudCount);
+      pointCloudPoints[currentIndex] = new PointCloudPoint(currentRealWorldPoint, pointCloudCount, x, y);
     }
   }
   
@@ -120,7 +120,7 @@ class PointCloudTracker
       
       if(currentRealWorldPoint.dist(neighborRealWorldPoint) <= pointToPointMaxDistance)
       {
-        pointCloudPoints[neighborIndex] = new PointCloudPoint(neighborRealWorldPoint, pointCloudCount);
+        pointCloudPoints[neighborIndex] = new PointCloudPoint(neighborRealWorldPoint, pointCloudCount, neighborX, neighborY);
         hasNeighbor = true;
         
         checkForNeighbors(neighborX, neighborY);
@@ -232,7 +232,7 @@ class PointCloudTracker
         
         for(int j = 0; j < pointCloud.size(); j++)
         {
-          PointCloudPoint pcp = (PointCloudPoint) pointCloud.get(j);
+          PointCloudPoint pcp = pointCloud.get(j);
           
           if(pcp != null)
           {
