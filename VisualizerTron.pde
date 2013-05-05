@@ -7,6 +7,35 @@ class VisualizerTron extends Visualizer
   
   void draw()
   {
+    drawScanline();
+    drawOutline();
+  }
+  
+  void drawScanline()
+  {
+    ArrayList lines = pointCloud.separateLines(false);
+    
+    int currentIndex = frameCount % lines.size();
+    
+    PointCloud currentLine = (PointCloud) lines.get(currentIndex); 
+    
+    o.pushStyle();
+      o.noFill();
+      o.stroke(7, 232, 200); // o.stroke(203, 53, 184);
+      o.strokeWeight(4);
+      o.beginShape();
+
+      for(PointCloudPoint currentPcp: currentLine)
+      {
+        o.vertex(currentPcp.x, currentPcp.y, currentPcp.z);
+      }
+      
+      o.endShape();
+    o.popStyle();
+  }
+  
+  void drawOutline()
+  {
     PointCloud outline = pointCloud.separateOutline(false);
     
     o.pushStyle();
