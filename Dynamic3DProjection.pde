@@ -28,7 +28,7 @@ PFont font = createFont("monaspace", 20);
 // flags
 Boolean drawStats = true;
 Boolean drawControls = true;
-Boolean drawPointClouds = true;
+Boolean drawPointClouds = false;
 
 // keystone vars
 Keystone ks;
@@ -48,6 +48,8 @@ int trackerPointToPointMaxDistance = 150;
 int trackerCloudSizeThreshold = 50;
 int trackerCloudPositionThreshold = 50;
 
+// visualizer vars
+VisualizerCentral visualizerCentral;
 
 // mesh creation vars
 /*HEC_ConvexHull meshCreator;
@@ -67,6 +69,7 @@ void setup() {
   config = new Config(this);
   setupSoni();
   setupTracker();
+  setupVisualizerCentral();
   setupControls();
 }
 
@@ -79,8 +82,7 @@ void draw() {
   updateDrawWorld(false);
   updateSoni();
   updateTracker();
-  
-  //updateDrawMeshes();
+  updateDrawVisualizerCentral();
   
   o.endDraw();
   background(0);

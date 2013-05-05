@@ -130,6 +130,12 @@ void updateTracker()
   tracker.update(soni.depthMap(), soni.depthMapRealWorld(), trackerPointToPointMaxDistance, trackerCloudSizeThreshold, trackerCloudPositionThreshold);
 }
 
+void updateDrawVisualizerCentral()
+{
+  visualizerCentral.updatePointClouds(tracker.trackedPointClouds);
+  visualizerCentral.draw();
+}
+
 /*void updateDrawMeshes()
 {
   

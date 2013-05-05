@@ -35,6 +35,11 @@ void setupTracker()
   tracker = new PointCloudTracker(soni.depthWidth(), soni.depthHeight());
 }
 
+void setupVisualizerCentral()
+{
+  visualizerCentral = new VisualizerCentral();
+}
+
 /*void setupMeshCreation()
 {
   meshCreator = new HEC_ConvexHull();

@@ -143,6 +143,7 @@ class PointCloudTracker
         {
           PointCloud trackedPointCloud = (PointCloud) trackedPointClouds.get(j);
           
+          // old point cloud is tracked
           if(pointCloud != null && isInThreshold(pointCloud.x, trackedPointCloud.x, cloudPositionThreshold) && isInThreshold(pointCloud.y, trackedPointCloud.y, cloudPositionThreshold) && isInThreshold(pointCloud.z, trackedPointCloud.z, cloudPositionThreshold) && isInThreshold(pointCloud.w, trackedPointCloud.w, cloudSizeThreshold) && isInThreshold(pointCloud.h, trackedPointCloud.h, cloudSizeThreshold) && isInThreshold(pointCloud.d, trackedPointCloud.d, cloudSizeThreshold))
           {
             pointCloud.trackCount = trackCount;
@@ -154,14 +155,13 @@ class PointCloudTracker
           }
         }
         
+        // new point cloud is added
         if(pointCloud != null && pointCloudIsNew)
         {
           pointCloud.trackCount = trackCount;
           PointCloud lastPointCloud = (PointCloud) trackedPointClouds.get(trackedPointClouds.size() - 1);
           pointCloud.id = lastPointCloud.id + 1;
           trackedPointClouds.add(pointCloud);
-          
-          println("pointCloud.id "+pointCloud.id);
         }
       }
     }
@@ -243,6 +243,8 @@ class PointCloudTracker
           }
         }
         
+        
+        // draw id
         o.pushMatrix();
           o.fill(255);
           o.translate(pointCloud.x, pointCloud.y, pointCloud.z);
