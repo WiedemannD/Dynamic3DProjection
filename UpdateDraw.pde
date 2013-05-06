@@ -75,54 +75,7 @@ void updateDrawWorld(Boolean drawWorldBounds)
 
 void updateSoni()
 {
-  // update the cam
   soni.update();
-
-
-  /*int[]   depthMap = soni.depthMap();
-  int     steps   = 10;  // to speed up the drawing, draw every third point
-  int     index;
-  PVector realWorldPoint;
- 
-  o.stroke(255);
-  
-  //soniPoints = new float[307200][3]; // HUGE HIT ON PERFORMANCE, THINK OF SOMETHING ELSE!!!!!!!!!!!
-  int count = 0;
-  
-  PVector[] realWorldMap = soni.depthMapRealWorld();
-  for(int y=0;y < soni.depthHeight();y+=steps)
-  {
-    for(int x=0;x < soni.depthWidth();x+=steps)
-    {
-      index = x + y * soni.depthWidth();
-      if(depthMap[index] > 0)
-      { 
-        
-        realWorldPoint = realWorldMap[index];
-        
-        //if(realWorldPoint.x < worldWidth)
-        //{
-          // draw the projected point
-          //        realWorldPoint = context.depthMapRealWorld()[index];
-          
-          
-          //o.point(realWorldPoint.x, realWorldPoint.y, realWorldPoint.z);  // make realworld z negative, in the 3d drawing coordsystem +z points in the direction of the eye
-         
-          //println("xyz "+realWorldPoint.x+" "+ realWorldPoint.y+" "+ realWorldPoint.z);
-         
-          o.pushMatrix(); 
-         
-            o.translate(0, 0, realWorldPoint.z);
-            o.ellipse(realWorldPoint.x, realWorldPoint.y, 30, 30);
-           
-          o.popMatrix(); 
-        //} 
-      }
-    }
-  } */
-
-  // draw the kinect cam
-  //soni.drawCamFrustum();
 }
 
 void updateTracker()
