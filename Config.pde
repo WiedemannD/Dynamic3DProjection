@@ -9,7 +9,9 @@ class Config
   
   // general vars
   Boolean debug = true;
-
+  
+  // tracking vars
+  int mapSteps = 5;
   
   // objects for general use
   PApplet main;

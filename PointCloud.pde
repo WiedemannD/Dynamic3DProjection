@@ -1,5 +1,6 @@
 import java.util.Comparator;
 import java.util.Collections;
+import wblut.geom.WB_Point3d;
 
 class PointCloud extends ArrayList<PointCloudPoint>
 {
@@ -40,6 +41,20 @@ class PointCloud extends ArrayList<PointCloudPoint>
     }
     
     return (PointCloudPoint) super.get(index);
+  }
+  
+  // using this function very often might be really slow, instead a once created index of existing points might be more efficient 
+  PointCloudPoint getWithMapXY(int mapX, int mapY)
+  {
+    for(PointCloudPoint pcp : this)
+    {
+      if(pcp.mapX == mapX && pcp.mapY == mapY)
+      {
+        return pcp;
+      }
+    }
+    
+    return null;
   }
   
   void calcDimensions(PointCloudPoint pcp)
@@ -87,6 +102,20 @@ class PointCloud extends ArrayList<PointCloudPoint>
     x = mostLeft + (w/2);
     y = mostTop + (h/2);
     z = mostBack + (d/2);
+  }
+  
+  WB_Point3d[] getWB_Point3dArray()
+  {
+    WB_Point3d[] points = new WB_Point3d[this.size()];
+    
+    for(int i = 0; i < this.size(); i++)
+    {
+      PointCloudPoint pcp = this.get(i);
+      
+      points[i] = new WB_Point3d((double) pcp.x, (double) pcp.y, (double) pcp.z);
+    }
+    
+    return points;
   }
   
   // separate pointCloud into lines of pointClouds

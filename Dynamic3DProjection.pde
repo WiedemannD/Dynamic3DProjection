@@ -4,13 +4,7 @@
 import processing.opengl.*;
 import deadpixel.keystone.*;
 import SimpleOpenNI.*;
-/*import wblut.math.*;
-import wblut.processing.*;
-import wblut.core.*;
-import wblut.hemesh.*;
-import wblut.geom.*;*/
 import controlP5.*;
-
 
 // general variables
 Config config;
@@ -50,11 +44,6 @@ int trackerCloudPositionThreshold = 50;
 
 // visualizer vars
 VisualizerCentral visualizerCentral;
-
-// mesh creation vars
-/*HEC_ConvexHull meshCreator;
-HE_Mesh mesh;
-WB_Render meshRender;*/
 
 // controlP5 vars
 ControlP5 cp5;

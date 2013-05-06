@@ -1,6 +1,6 @@
 class PointCloudTracker
 {
-  int mapSteps = 10; 
+  //int mapSteps = 10; 
   
   int[] depthMap;
   PVector[] realWorldMap;
@@ -46,9 +46,9 @@ class PointCloudTracker
   {
     int currentIndex;
     
-    for(int y = 0; y < mapHeight; y += mapSteps)
+    for(int y = 0; y < mapHeight; y += config.mapSteps)
     {
-      for(int x = 0; x < mapWidth; x += mapSteps)
+      for(int x = 0; x < mapWidth; x += config.mapSteps)
       {
         currentIndex = x + y * soni.depthWidth();
         
@@ -89,23 +89,30 @@ class PointCloudTracker
   
   void checkForNeighbors(int x, int y)
   {
-    int currentIndex = x + y * soni.depthWidth();
-    int neighborIndexTop = x + (y - mapSteps) * soni.depthWidth();
-    int neighborIndexRight = (x + mapSteps) + y * soni.depthWidth();
-    int neighborIndexBottom = x + (y + mapSteps) * soni.depthWidth();
-    int neighborIndexLeft = (x - mapSteps) + y * soni.depthWidth();
-
-    PVector neighborRealWorldPointTop, neighborRealWorldPointRight, neighborRealWorldPointBottom, neighborRealWorldPointLeft;
-    PVector currentRealWorldPoint = realWorldMap[currentIndex];
-    
-    Boolean hasTopNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexTop, x, (y - mapSteps));
-    Boolean hasRightNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexRight, (x + mapSteps), y);
-    Boolean hasBottomNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexBottom, x, (y + mapSteps));
-    Boolean hasLeftNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexLeft, (x - mapSteps), y);
-    
-    if((hasTopNeighbor || hasRightNeighbor || hasBottomNeighbor || hasLeftNeighbor) && pointCloudPoints[currentIndex] == null)
+    try
     {
-      pointCloudPoints[currentIndex] = new PointCloudPoint(currentRealWorldPoint, pointCloudCount, x, y);
+      int currentIndex = x + y * soni.depthWidth();
+      int neighborIndexTop = x + (y - config.mapSteps) * soni.depthWidth();
+      int neighborIndexRight = (x + config.mapSteps) + y * soni.depthWidth();
+      int neighborIndexBottom = x + (y + config.mapSteps) * soni.depthWidth();
+      int neighborIndexLeft = (x - config.mapSteps) + y * soni.depthWidth();
+  
+      PVector neighborRealWorldPointTop, neighborRealWorldPointRight, neighborRealWorldPointBottom, neighborRealWorldPointLeft;
+      PVector currentRealWorldPoint = realWorldMap[currentIndex];
+      
+      Boolean hasTopNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexTop, x, (y - config.mapSteps));
+      Boolean hasRightNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexRight, (x + config.mapSteps), y);
+      Boolean hasBottomNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexBottom, x, (y + config.mapSteps));
+      Boolean hasLeftNeighbor = checkForNeighbor(currentRealWorldPoint, currentIndex, neighborIndexLeft, (x - config.mapSteps), y);
+      
+      if((hasTopNeighbor || hasRightNeighbor || hasBottomNeighbor || hasLeftNeighbor) && pointCloudPoints[currentIndex] == null)
+      {
+        pointCloudPoints[currentIndex] = new PointCloudPoint(currentRealWorldPoint, pointCloudCount, x, y);
+      }
+    }
+    catch(StackOverflowError e)
+    {
+      print("\nStackOverflowError: too much recursion. ");
     }
   }
   

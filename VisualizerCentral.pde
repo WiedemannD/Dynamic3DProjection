@@ -1,6 +1,6 @@
 class VisualizerCentral
 {
-  int visualizerType = 1;
+  int visualizerType = 2;
   ArrayList pointClouds;
   ArrayList visualizers;
   int updateVisualizerCount = 0;
@@ -57,6 +57,16 @@ class VisualizerCentral
               visualizers.add(new VisualizerTron(pointCloud, updateVisualizerCount));
               break;
               
+            case 2:
+              //outline drawing visualizer
+              visualizers.add(new VisualizerMesh(pointCloud, updateVisualizerCount));
+              break;
+              
+            case 3:
+              //outline drawing visualizer
+              visualizers.add(new VisualizerSimpleMesh(pointCloud, updateVisualizerCount));
+              break;
+              
             default:
               //just default visualizers
               visualizers.add(new Visualizer(pointCloud, updateVisualizerCount));
@@ -87,6 +97,11 @@ class VisualizerCentral
   
   void draw()
   {
+    //o.lights(); // add default lighting
+    o.ambientLight(100, 100, 100);
+    o.directionalLight(200, 200, 200, 0.3, -0.3, 0.3);
+    //o.pointLight(255, 255, 255, 0, 0, 1000);
+    
     for(int i = 0; i < visualizers.size(); i++)
     {
       Visualizer visualizer = (Visualizer) visualizers.get(i);
