@@ -8,7 +8,7 @@ class VisualizerTron extends Visualizer
   void draw()
   {
     drawScanline();
-    drawOutline();
+    drawOutline(1);
   }
   
   void drawScanline()
@@ -34,7 +34,7 @@ class VisualizerTron extends Visualizer
     o.popStyle();
   }
   
-  void drawOutline()
+  void drawOutline(int mode)
   {
     PointCloud outline = pointCloud.separateOutline(false);
     
@@ -45,6 +45,9 @@ class VisualizerTron extends Visualizer
     
       color colHigh = color(7, 232, 200);
       color colLow = color(15, 62, 55);
+      
+      int currentIndex = frameCount % outline.size();
+      
       color col1, col2;
       
       if(frameCount % 20 > 10)
@@ -64,13 +67,29 @@ class VisualizerTron extends Visualizer
       {
         PointCloudPoint currentPcp = outline.get(i);
         
-        if(i % 8 > 4)
+        switch(mode)
         {
-          o.stroke(col1);
-        }
-        else
-        {
-          o.stroke(col2);
+          case 0:
+            if(i % 8 > 4)
+            {
+              o.stroke(col1);
+            }
+            else
+            {
+              o.stroke(col2);
+            }
+            break;
+            
+          case 1:
+            if(i <= currentIndex + (outline.size()/4) && i >= currentIndex - (outline.size()/4))
+            {
+              o.stroke(colHigh);
+            }
+            else
+            {
+              o.stroke(colLow);
+            }
+            break;
         }
         
         o.vertex(currentPcp.x, currentPcp.y, currentPcp.z);
