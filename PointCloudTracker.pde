@@ -112,7 +112,7 @@ class PointCloudTracker
     }
     catch(StackOverflowError e)
     {
-      print("\nStackOverflowError: too much recursion. ");
+      //print("\nStackOverflowError: too much recursion. ");
     }
   }
   

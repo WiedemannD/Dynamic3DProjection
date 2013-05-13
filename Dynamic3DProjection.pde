@@ -47,6 +47,7 @@ VisualizerCentral visualizerCentral;
 
 // controlP5 vars
 ControlP5 cp5;
+CallbackListener cpListener;
 
 void setup() {
   size(vWidth, vHeight, OPENGL);

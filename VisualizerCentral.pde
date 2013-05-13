@@ -1,6 +1,6 @@
 class VisualizerCentral
 {
-  int visualizerType = 2;
+  int visualizerType = 1;
   ArrayList pointClouds;
   ArrayList visualizers;
   int updateVisualizerCount = 0;
@@ -107,5 +107,11 @@ class VisualizerCentral
       Visualizer visualizer = (Visualizer) visualizers.get(i);
       visualizer.draw();
     }
+  }
+  
+  void reset()
+  {
+    pointClouds.clear();
+    visualizers.clear();
   }
 }
