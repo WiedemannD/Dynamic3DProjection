@@ -25,6 +25,8 @@ class Visualizer
   void draw()
   {
     o.pushStyle();
+      
+      
       if(pointCloud.id % 2 > 0)
       {
         o.fill(255, 0, 0);  
@@ -37,7 +39,7 @@ class Visualizer
     for(int j = 0; j < pointCloud.size(); j++)
     {
       PointCloudPoint pcp = (PointCloudPoint) pointCloud.get(j);
-      
+
       o.pushMatrix();
         o.translate(0, 0, pcp.z);
         o.ellipse(pcp.x, pcp.y, 30, 30);

@@ -73,7 +73,8 @@ void setupControls()
   cp5.addSlider("trackerCloudSizeThreshold").setPosition(150, 30).setWidth(300).setRange(0, 1000).setValue(200);
   cp5.addSlider("trackerCloudPositionThreshold").setPosition(150, 50).setWidth(300).setRange(0, 1000).setValue(200);
     
-  cp5.addSlider(visualizerCentral, "visualizerType", "visualizerType", 0, 3, 1, 700, 10, 300, 10).setNumberOfTickMarks(4).setSliderMode(Slider.FLEXIBLE).addCallback(cpListener);
+  cp5.addSlider(config, "mapSteps", "mapSteps", 5, 100, 5, 700, 10, 300, 10);//.setNumberOfTickMarks(4).setSliderMode(Slider.FLEXIBLE).addCallback(cpListener);
+  cp5.addSlider(visualizerCentral, "visualizerType", "visualizerType", 0, 3, 1, 700, 30, 300, 10).setNumberOfTickMarks(4).setSliderMode(Slider.FLEXIBLE).addCallback(cpListener);
 }
 
 

@@ -97,11 +97,12 @@ class VisualizerCentral
   
   void draw()
   {
-    //o.lights(); // add default lighting
-    o.ambientLight(100, 100, 100);
-    o.directionalLight(200, 200, 200, 0.3, -0.3, 0.3);
-    //o.pointLight(255, 255, 255, 0, 0, 1000);
-    
+    if(visualizerType != 0)
+    {
+      o.ambientLight(100, 100, 100);
+      o.directionalLight(200, 200, 200, 0.3, -0.3, 0.3);
+    }
+   
     for(int i = 0; i < visualizers.size(); i++)
     {
       Visualizer visualizer = (Visualizer) visualizers.get(i);
